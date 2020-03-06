@@ -1,0 +1,16 @@
+#!/bin/bash
+
+LIST="$(aws ec2 describe-instances --instance-ids $ID --region us-east-2 --query Reservations[].Instances[].PublicIpAddress --output text)"
+A="ssh -vi /home/ec2-user/sairam -o StrictHostKeyChecking=no ec2-user@"
+
+for IP in $LIST;
+
+do
+        echo   "$IP"
+$A$IP -yes << EOF
+sudo rm -fr /home/ec2-user/web-site/
+git clone https://github.com/sairam9479/web-site.git
+sudo rm -fr /usr/share/nginx/html/*
+sudo mv /home/ec2-user/web-site/* /usr/share/nginx/html/
+EOF
+done
